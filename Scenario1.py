@@ -27,9 +27,11 @@ def main():
     def epsilon_greedy_policy(Qtable, state, epsilon):
         random_int = random.uniform(0,1)
         if random_int > epsilon:
+            # print("PLOITING")
             action = np.argmax(Qtable[state])
         else:
             action = random.randint(0, 3) # select a random action
+            # print("EXP")
         return action
 
     # define a reward function
@@ -60,8 +62,8 @@ def main():
 
     # define the variables
     state = fourRoomsObj.getPosition()
-    learning_rate = 0.7
-    discountfactor = 0.95
+    learning_rate = 0.1
+    discountfactor = 0.5
 
     # Exploration parameters
     max_epsilon = 1.0           
@@ -69,7 +71,7 @@ def main():
     decay_rate = 0.0005 
 
 
-    for episode in range(10):
+    for episode in range(100):
 
 
         epsilon = min_epsilon + (max_epsilon - min_epsilon)*np.exp(-decay_rate*episode)
@@ -80,37 +82,68 @@ def main():
             newPos = (0, 0)
             packagesRemaining = 0
 
-            action = epsilon_greedy_policy(QTable, state, epsilon)
-            r = random.randint(0, 3)
+            r = epsilon_greedy_policy(QTable, state, epsilon)
+            # r = random.randint(0, 3)
             if r == 0:
                 gridType, newPos, packagesRemaining, isTerminal = fourRoomsObj.takeAction(FourRooms.UP)
-                print("Agent took {0} action and moved to {1} of type {2}".format (aTypes[r], newPos, gTypes[gridType]))
+                # print("Agent took {0} action and moved to {1} of type {2}".format (aTypes[r], newPos, gTypes[gridType]))
                 state = newPos
 
             elif r == 1:
                 gridType, newPos, packagesRemaining, isTerminal = fourRoomsObj.takeAction(FourRooms.DOWN)
-                print("Agent took {0} action and moved to {1} of type {2}".format (aTypes[r], newPos, gTypes[gridType]))
+                # print("Agent took {0} action and moved to {1} of type {2}".format (aTypes[r], newPos, gTypes[gridType]))
                 state = newPos
 
             elif r == 2:
                 gridType, newPos, packagesRemaining, isTerminal = fourRoomsObj.takeAction(FourRooms.LEFT)
-                print("Agent took {0} action and moved to {1} of type {2}".format (aTypes[r], newPos, gTypes[gridType]))
+                # print("Agent took {0} action and moved to {1} of type {2}".format (aTypes[r], newPos, gTypes[gridType]))
                 state = newPos
 
             elif r == 3:
                 gridType, newPos, packagesRemaining, isTerminal = fourRoomsObj.takeAction(FourRooms.RIGHT)
-                print("Agent took {0} action and moved to {1} of type {2}".format (aTypes[r], newPos, gTypes[gridType]))
+                # print("Agent took {0} action and moved to {1} of type {2}".format (aTypes[r], newPos, gTypes[gridType]))
                 state = newPos
 
             # q table being updated with the formula
             QTable[state] = QTable[state] + learning_rate * (reward + discountfactor * (np.max(QTable[newPos])-QTable[state]) )
             if isTerminal:
-                print(episode)
+                # print(episode)
                 break
         fourRoomsObj.showPath(-1, savefig= "image.png")
         fourRoomsObj.newEpoch()
 
     # Don't forget to call newEpoch when you start a new simulation run
+    for episode in range(10):
+        fourRoomsObj.newEpoch()
+        state = fourRoomsObj.getPosition()
+        isTerminal = False
+        while True:
+            action = np.argmax(QTable(state))
+            # isTerminal = False
+            if action == 0:
+                gridType, newPos, packagesRemaining, isTerminal = fourRoomsObj.takeAction(FourRooms.UP)
+                # print("Agent took {0} action and moved to {1} of type {2}".format (aTypes[r], newPos, gTypes[gridType]))
+                state = newPos
+
+            elif action == 1:
+                gridType, newPos, packagesRemaining, isTerminal = fourRoomsObj.takeAction(FourRooms.DOWN)
+                # print("Agent took {0} action and moved to {1} of type {2}".format (aTypes[r], newPos, gTypes[gridType]))
+                state = newPos
+
+            elif action == 2:
+                gridType, newPos, packagesRemaining, isTerminal = fourRoomsObj.takeAction(FourRooms.LEFT)
+                # print("Agent took {0} action and moved to {1} of type {2}".format (aTypes[r], newPos, gTypes[gridType]))
+                state = newPos
+
+            elif action == 3:
+                gridType, newPos, packagesRemaining, isTerminal = fourRoomsObj.takeAction(FourRooms.RIGHT)
+                # print("Agent took {0} action and moved to {1} of type {2}".format (aTypes[r], newPos, gTypes[gridType]))
+                state = newPos
+
+            if isTerminal:
+                break
+
+        fourRoomsObj.showPath(-1, savefig= "final.png")
 
     # Show Path
     # fourRoomsObj.showPath(-1, savefig= "image.png")
