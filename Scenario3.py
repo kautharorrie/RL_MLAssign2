@@ -7,7 +7,11 @@ import time
 
 
 # initialise all values of the q-table to zero
-QTable = np.zeros((13, 13, 4))
+QTableRed = np.zeros((13, 13, 4))
+QTableGreen = np.zeros((13, 13, 4))
+QTableBlue = np.zeros((13, 13, 4))
+
+
 RTable =  np.zeros((13, 13, 4))
 
 def epsilon_greedy_policy(Qtable, state, epsilon, pos):
@@ -80,7 +84,7 @@ def main():
             stochastic = True
 
     # Create FourRooms Object
-    fourRoomsObj = FourRooms('simple', stochastic)
+    fourRoomsObj = FourRooms('rgb', stochastic)
 
     aTypes = ['UP', 'DOWN', 'LEFT', 'RIGHT']
     gTypes = ['EMPTY', 'RED', 'GREEN', 'BLUE']
