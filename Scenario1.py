@@ -26,6 +26,8 @@ def epsilon_greedy_policy(Qtable, state, epsilon, pos):
 
         return action
 
+        
+
 # method to check the validity of the current position of the agent 
 def valid(pos,action):
     if(RTable[pos][action]==-1):
