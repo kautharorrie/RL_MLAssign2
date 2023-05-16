@@ -25,7 +25,6 @@ def epsilon_greedy_policy(Qtable, state, epsilon, pos):
                 action = np.random.randint(0,4)
 
         return action
-
         
 
 # method to check the validity of the current position of the agent 
@@ -104,14 +103,25 @@ def main():
 
             gridType, newPos, packagesRemaining, isTerminal = fourRoomsObj.takeAction(currentAction)
 
-            # check if the package was found by taking the action
-            if gridType > 0:
-                RTable[currentPos][currentAction] = 100
+            # # check if the package was found by taking the action
+            # if gridType > 0:
+            #     RTable[currentPos][currentAction] = 100
 
             print("Agent took {0} action and moved to {1} of type {2}".format (aTypes[currentAction], newPos, gTypes[gridType]))
 
+             # REWARD FUNCTION
+            # reward function applied after taking an action 
+            if gridType > 0: # if the package is found
+                # RTable[currentPos][currentAction] = 100
+                reward = 100
+            # if the agent hits a wall it has a negative reward
+            elif gridType < 0:
+                reward = -1
+            # if the agent moves to a non-terminal state
+            else:
+                reward  = 0
 
-            reward = RTable[currentPos][currentAction]
+            # reward = RTable[currentPos][currentAction]
             
             temporaldiff = reward + discountfactor * (np.max(QTable[newPos])-QTable[currentPos][currentAction])
             # q table being updated with the formula
