@@ -53,11 +53,10 @@ def valid(pos,action):
 # get the maximum action you can take from the Q table
 def maxAction(pos, new_pos):
 
-    if gridtype == 1:
-        state_actions = [QTableRed[pos][0],QTable[pos][1],QTable[pos][2],QTable[pos][3]]
-    if gridtype == 1:
+    state_actions = [QTableRed[pos][0],QTable[pos][1],QTable[pos][2],QTable[pos][3]]
+    if gridtype == 2:
         state_actions = [QTableGreen[pos][0],QTable[pos][1],QTable[pos][2],QTable[pos][3]]
-    if gridtype == 1:
+    if gridtype == 3:
         state_actions = [QTableBlue[pos][0],QTable[pos][1],QTable[pos][2],QTable[pos][3]]
     q = max(state_actions) # get the max action from the states possible actions
     
@@ -121,7 +120,7 @@ def main():
             stochastic = True
 
     # Create FourRooms Object
-    fourRoomsObj = FourRooms('multi', stochastic)
+    fourRoomsObj = FourRooms('rgb', stochastic)
 
     aTypes = ['UP', 'DOWN', 'LEFT', 'RIGHT']
     gTypes = ['EMPTY', 'RED', 'GREEN', 'BLUE']
@@ -136,7 +135,7 @@ def main():
 
     pos = 0
 
-    for epoch in range (20):
+    for epoch in range (80):
         # get the current position of the agent
         currentPos = fourRoomsObj.getPosition()
         # check if the isTerminal is reached to stop loop
@@ -147,17 +146,20 @@ def main():
 
             gridType, newPos, packagesRemaining, isTerminal = fourRoomsObj.takeAction(currentAction)
 
+            # REWARD FUNCTION
             # if found red package
             if(gridType==1):
                 RTableRed[currentPos][currentAction] = 100
                 RTableGreen[currentPos][currentAction] = -100
                 RTableBlue[currentPos][currentAction] = -100
+                currentPos = fourRoomsObj.getPosition()
                 gridtype=2
                 # if found green package
             if(gridType==2):
                 if(packagesRemaining!=1):
                     RTableRed[currentPos][currentAction] = -100
                     RTableBlue[currentPos][currentAction] = -100
+                    currentPos = fourRoomsObj.getPosition()
                     break
                 else:
                     RTableGreen[currentPos][currentAction] = 100
@@ -167,12 +169,15 @@ def main():
                 if(packagesRemaining!=0):
                     RTableRed[currentPos][currentAction] = -100
                     RTableGreen[currentPos][currentAction] = -100
+                    currentPos = fourRoomsObj.getPosition()
                     break
                 else:
                     RTableBlue[currentPos][currentAction] = 100
                     break    
             
             print("Agent took {0} action and moved to {1} of type {2}".format (aTypes[currentAction], newPos, gTypes[gridType]))
+            
+            # calculates temporial difference and Qvalue for each colour
             tempDiffRed = (RTableRed[currentPos][currentAction] + discountfactor*maxAction(newPos, True)) -  QTableRed[currentPos][currentAction]
             QTableRed[currentPos][currentAction] += learningrate *(tempDiffRed)
             
@@ -181,6 +186,7 @@ def main():
 
             tempDiffBlue = (RTableBlue[currentPos][currentAction] + discountfactor*maxAction(newPos, True)) -  QTableBlue[currentPos][currentAction]
             QTableBlue[currentPos][currentAction] += learningrate *(tempDiffBlue)
+            
             currentPos = newPos
 
             if fourRoomsObj.isTerminal():

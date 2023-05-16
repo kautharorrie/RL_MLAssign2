@@ -73,7 +73,7 @@ def main():
 
     stochastic = False
 
-    # CLI
+    # check if user specified stochastic in command line input
     if(len(sys.argv) >1):
         if(sys.argv[1] == '-stochastic'):
             stochastic = True
@@ -89,10 +89,10 @@ def main():
     
     # define variables to use for updating the q-value
     epsilon = 0.8
-    learningrate = 0.6
+    learningrate = 1
     discountfactor = 0.5
 
-    for epoch in range (20):
+    for epoch in range (30):
         # get the current position of the agent
         currentPos = fourRoomsObj.getPosition()
         # check if the isTerminal is reached to stop loop
@@ -132,7 +132,7 @@ def main():
         
         fourRoomsObj.newEpoch() #when epoch is complete, go back to start
 
-        # decay of epsilon to allow the agent to exploit the environment more
+        # decay of epsilon to allow the agent to exploit the environment more instead of explore
         if(epsilon>0):
             epsilon-=0.05
             
