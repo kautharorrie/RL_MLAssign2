@@ -8,6 +8,7 @@ import time
 
 # initialise all values of the q-table to zero
 QTable = np.zeros((13, 13, 4))
+# QTable = np.zeros((13, 13, 4))
 RTable =  np.zeros((13, 13, 4))
 
 def epsilon_greedy_policy(Qtable, state, epsilon, pos):
@@ -80,7 +81,7 @@ def main():
             stochastic = True
 
     # Create FourRooms Object
-    fourRoomsObj = FourRooms('simple', stochastic)
+    fourRoomsObj = FourRooms('multi', stochastic)
 
     aTypes = ['UP', 'DOWN', 'LEFT', 'RIGHT']
     gTypes = ['EMPTY', 'RED', 'GREEN', 'BLUE']
@@ -110,9 +111,38 @@ def main():
 
             print("Agent took {0} action and moved to {1} of type {2}".format (aTypes[currentAction], newPos, gTypes[gridType]))
 
+            # if packagesRemaining == 3:
+            #     reward = -10
+            # elif packagesRemaining == 2:
+            #     reward = -5
+            # elif packagesRemaining == 1:
+            #     reward = -1
 
-            reward = RTable[currentPos][currentAction]
+            # elif packagesRemaining == 0:
+            #     reward = 0
             
+            # REWARD FUNCTION
+            # reward function applied after taking an action 
+            if gridType > 0: # if the package is found
+                reward = 100
+            # if the agent hits a wall it has a negative reward
+            elif gridType < 0:
+                reward = -1
+            # if the agent moves to a non-terminal state
+            else:
+                reward  = 0
+            # # REWARD FUNCTION
+            # # reward function applied after taking an action 
+            # if gridType > 0: # if the package is found
+            #     # RTable[currentPos][currentAction] = 100
+            #     reward += 100
+            # # if the agent hits a wall it has a negative reward
+            # elif gridType < 0:
+            #     reward += -1
+            # # if the agent moves to a non-terminal state
+            # else:
+            #     reward  += 0
+
             temporaldiff = reward + discountfactor * (np.max(QTable[newPos])-QTable[currentPos][currentAction])
             # q table being updated with the formula
             QTable[currentPos][currentAction] = QTable[currentPos][currentAction] + learningrate *  (temporaldiff)
