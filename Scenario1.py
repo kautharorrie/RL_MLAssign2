@@ -103,16 +103,11 @@ def main():
 
             gridType, newPos, packagesRemaining, isTerminal = fourRoomsObj.takeAction(currentAction)
 
-            # # check if the package was found by taking the action
-            # if gridType > 0:
-            #     RTable[currentPos][currentAction] = 100
-
             print("Agent took {0} action and moved to {1} of type {2}".format (aTypes[currentAction], newPos, gTypes[gridType]))
 
              # REWARD FUNCTION
             # reward function applied after taking an action 
             if gridType > 0: # if the package is found
-                # RTable[currentPos][currentAction] = 100
                 reward = 100
             # if the agent hits a wall it has a negative reward
             elif gridType < 0:
@@ -121,21 +116,22 @@ def main():
             else:
                 reward  = 0
 
-            # reward = RTable[currentPos][currentAction]
-            
+            # calculate temporal difference
             temporaldiff = reward + discountfactor * (np.max(QTable[newPos])-QTable[currentPos][currentAction])
             # q table being updated with the formula
-            QTable[currentPos][currentAction] = QTable[currentPos][currentAction] + learningrate *  (temporaldiff)
+            QTable[currentPos][currentAction] += learningrate *  (temporaldiff)
 
-            currentPos = newPos
+            currentPos = newPos #set old position to the new position
 
             if fourRoomsObj.isTerminal():
                 break
 
-        print ("Done with epoch")
-        print(epoch)
-        fourRoomsObj.showPath(-1,"image.png")
-        fourRoomsObj.newEpoch()
+        print ("Done with epoch - " , epoch)
+        
+        fourRoomsObj.showPath(-1,"image.png") #shows final path of the agent
+        
+        fourRoomsObj.newEpoch() #when epoch is complete, go back to start
+
         # decay of epsilon to allow the agent to exploit the environment more
         if(epsilon>0):
             epsilon-=0.05
